@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Azazie 电商 AI 全景落地方案（含智能导购深度方案）</title>
+<style>
+:root{--text:#2C2C2B;--sub:#7D7A75;--bg:#FFFFFF;--soft:#F9F8F7;--surface:#F0EFED;--border:#E6E5E3;--blue:#2783DE;--blue-s:#E5F2FC;--green:#46A171;--green-s:#E8F1EC;--orange:#D5803B;--orange-s:#FBEBDE;--red:#E56458;--red-s:#FCE9E7;--purple:#9A6BC0;--purple-s:#F3ECF8}
+@media (prefers-color-scheme:dark){:root{--text:#FFFFFF;--sub:rgba(255,255,255,.65);--bg:#191919;--soft:#202020;--surface:#2A2A29;--border:rgba(255,255,255,.18);--blue:#5E9FE8;--blue-s:rgba(94,159,232,.12);--green:#72BC8F;--green-s:rgba(114,188,143,.12);--orange:#DE9255;--orange-s:rgba(222,146,85,.12);--red:#E97366;--red-s:rgba(233,115,102,.12);--purple:#BF8EDA;--purple-s:rgba(191,142,218,.12)}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg);font-size:16px;line-height:1.6}
+a{color:var(--blue)}
+.topbar{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--border)}
+.topbar-in{max-width:1120px;margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:700;letter-spacing:.02em;margin-right:auto}
+.brand small{font-weight:400;color:var(--sub);margin-left:8px;font-size:14px}
+.tabs{display:flex;gap:4px;background:var(--surface);padding:4px;border-radius:10px}
+.tab{border:0;background:transparent;color:var(--sub);font:inherit;font-size:15px;padding:10px 16px;border-radius:8px;cursor:pointer;min-height:44px}
+.tab[aria-selected="true"]{background:var(--bg);color:var(--text);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.tab:focus-visible,.toc a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.printbtn{border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:14px;padding:8px 14px;border-radius:8px;cursor:pointer;min-height:44px}
+main{max-width:1120px;margin:0 auto;padding:0 32px 64px}
+.page{display:none}.page.active{display:block}
+.hero{padding:56px 0 40px;border-bottom:1px solid var(--border)}
+.eyebrow{font-size:14px;color:var(--blue);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.hero h1{font-size:40px;line-height:1.2;margin:12px 0 16px;letter-spacing:-.01em}
+.hero p.lead{font-size:18px;color:var(--sub);max-width:760px;margin:0}
+.hero-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
+.pill{display:inline-block;font-size:14px;padding:4px 12px;border-radius:999px;background:var(--surface);color:var(--text)}
+.pill.b{background:var(--blue-s);color:var(--blue)}.pill.g{background:var(--green-s);color:var(--green)}.pill.o{background:var(--orange-s);color:var(--orange)}.pill.r{background:var(--red-s);color:var(--red)}.pill.p{background:var(--purple-s);color:var(--purple)}
+.toc{display:flex;flex-wrap:wrap;gap:8px 16px;padding:16px 0;border-bottom:1px solid var(--border);font-size:14px}
+.toc a{color:var(--sub);text-decoration:none;padding:4px 0}.toc a:hover{color:var(--blue)}
+section{padding:48px 0;border-bottom:1px solid var(--border)}
+section:last-child{border-bottom:0}
+.sec-no{font-size:14px;color:var(--sub);font-weight:600}
+h2{font-size:28px;line-height:1.3;margin:4px 0 20px}
+h3{font-size:19px;margin:0 0 8px}
+h4{font-size:16px;margin:16px 0 6px}
+.sec-desc{color:var(--sub);max-width:760px;margin:-12px 0 24px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.card{border:1px solid var(--border);border-radius:12px;padding:20px;background:var(--bg)}
+.card.soft{background:var(--soft)}
+.card p{margin:0 0 8px}.card p:last-child{margin-bottom:0}
+.card ul{margin:8px 0 0;padding-left:20px}.card li{margin:4px 0}
+.muted{color:var(--sub)}.small{font-size:14px}
+.kpi{font-size:24px;font-weight:700;line-height:1.1}
+.kpi-l{font-size:14px;color:var(--sub);margin-top:6px}
+.callout{border-radius:12px;padding:16px 20px;background:var(--blue-s);border:1px solid transparent;margin:16px 0}
+.callout.o{background:var(--orange-s)}.callout.g{background:var(--green-s)}.callout.r{background:var(--red-s)}
+.callout .ct{display:block;font-weight:700;margin-bottom:4px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--border)}
+th{font-size:14px;color:var(--sub);font-weight:600;background:var(--soft)}
+.tbl{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+.tbl table td:first-child{font-weight:600;white-space:nowrap}
+/* journey */
+.journey{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.step{border:1px solid var(--border);border-radius:10px;padding:14px;background:var(--soft);position:relative}
+.step .n{font-size:13px;color:var(--blue);font-weight:700}
+.step .t{font-weight:600;margin:2px 0 6px}
+.step .pain{font-size:14px;color:var(--sub)}
+.step .ai{font-size:14px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+/* feature cards */
+.feat{display:flex;flex-direction:column;gap:6px}
+.feat .hd{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.feat .tag{font-size:13px}
+.feat .row{font-size:14px}
+.feat .row b{color:var(--sub);font-weight:600;margin-right:4px}
+/* arch */
+.arch{display:grid;grid-template-columns:1fr 40px 1.4fr 40px 1.2fr 40px 1fr;align-items:stretch}
+.arch .col{border:1px solid var(--border);border-radius:10px;padding:14px;background:var(--soft)}
+.arch .col h4{margin:0 0 8px;font-size:15px}
+.arch .col div{font-size:14px;padding:6px 8px;margin:6px 0;border-radius:6px;background:var(--bg);border:1px solid var(--border)}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:20px}
+.arch-bottom{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+/* phone mock */
+.mockwrap{display:grid;grid-template-columns:360px 1fr;gap:32px;align-items:start}
+.phone{border:1px solid var(--border);border-radius:24px;padding:12px;background:var(--soft);max-width:360px}
+.screen{background:var(--bg);border-radius:16px;overflow:hidden;border:1px solid var(--border)}
+.scr-top{padding:12px 16px;border-bottom:1px solid var(--border);font-weight:600;font-size:15px;display:flex;justify-content:space-between}
+.scr-top span{font-weight:400;color:var(--sub);font-size:13px}
+.chat{padding:12px;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.5}
+.msg{max-width:85%;padding:8px 12px;border-radius:12px}
+.msg.u{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
+.msg.a{align-self:flex-start;background:var(--surface);border-bottom-left-radius:4px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12px;border:1px solid var(--border);border-radius:999px;padding:3px 10px;background:var(--bg)}
+.prods{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.prod{border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;background:var(--bg)}
+.prod .img{height:70px;display:flex;align-items:flex-end;justify-content:center}
+.prod .img i{display:block;width:26px;height:56px;border-radius:13px 13px 4px 4px;background:rgba(255,255,255,.35)}
+.prod .meta{padding:4px 6px;line-height:1.35}
+.why{font-size:12px;color:var(--sub);border-left:2px solid var(--blue);padding-left:8px}
+.inputbar{margin:4px 12px 12px;border:1px solid var(--border);border-radius:999px;padding:8px 14px;color:var(--sub);font-size:13px;display:flex;justify-content:space-between}
+/* roadmap */
+.road{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.phase{border-top:4px solid var(--blue);border-radius:10px;padding:18px;background:var(--soft)}
+.phase.p2{border-top-color:var(--green)}.phase.p3{border-top-color:var(--purple)}
+.phase .when{font-size:14px;color:var(--sub)}
+.phase ul{padding-left:18px;margin:8px 0 0}.phase li{margin:4px 0;font-size:15px}
+/* metric tree */
+.tree{display:grid;grid-template-columns:1fr 2fr;gap:16px;align-items:stretch}
+.north{border:2px solid var(--blue);border-radius:12px;padding:20px;display:flex;flex-direction:column;justify-content:center;background:var(--blue-s)}
+.north .k{font-size:22px;font-weight:700;margin:6px 0}
+/* qa */
+details{border:1px solid var(--border);border-radius:10px;padding:0;margin:10px 0;background:var(--bg)}
+summary{cursor:pointer;padding:14px 18px;font-weight:600;list-style:none;display:flex;gap:10px;align-items:flex-start;min-height:44px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";color:var(--blue);font-weight:700;width:14px;flex:none}
+details[open] summary::before{content:"–"}
+summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:10px}
+.ans{padding:0 18px 16px 42px;font-size:15px}
+.ans p{margin:6px 0}.ans ul,.ans ol{margin:6px 0;padding-left:20px}
+.fill{background:var(--orange-s);color:var(--orange);padding:0 6px;border-radius:4px;font-weight:600}
+.en{font-family:Georgia,"Times New Roman",serif;font-size:16px;line-height:1.65;background:var(--soft);border:1px solid var(--border);border-radius:12px;padding:20px}
+.check li{list-style:none;margin:6px 0}
+.check{padding-left:0}
+.check li{position:relative;padding-left:26px}.check li::before{content:"";position:absolute;left:0;top:4px;width:14px;height:14px;border:1.5px solid var(--blue);border-radius:3px}
+.foot{color:var(--sub);font-size:14px;padding:32px 0}
+@media (max-width:960px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}.journey{grid-template-columns:repeat(3,1fr)}.arch{grid-template-columns:1fr;gap:4px}.arrow{transform:rotate(90deg);height:28px}.mockwrap{grid-template-columns:1fr}.phone{margin:0 auto}.arch-bottom{grid-template-columns:1fr}}
+@media (max-width:640px){main,.topbar-in{padding-left:16px;padding-right:16px}.g2,.g3,.g4,.road,.tree{grid-template-columns:1fr}.journey{grid-template-columns:1fr 1fr}.hero h1{font-size:30px}h2{font-size:24px}.hero{padding:32px 0 24px}section{padding:32px 0}.brand small{display:none}.tab{padding:10px 12px;font-size:14px}.printbtn{display:none}}
+@media print{.topbar,.toc{display:none}.page{display:block!important;page-break-before:always}section{page-break-inside:avoid}details{border:0}details .ans{display:block}body{font-size:12pt}}
+
+.chain{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.link{border:1px solid var(--border);border-radius:10px;padding:14px;background:var(--soft)}
+.link .n{font-size:13px;font-weight:700;color:var(--blue)}
+.link .t{font-weight:600;margin:2px 0 6px}
+.link .ai{font-size:14px;color:var(--sub)}
+.layer{display:grid;grid-template-columns:160px 1fr;gap:12px;align-items:stretch;margin-bottom:10px}
+.layer .lh{border-radius:10px;padding:14px;font-weight:700;display:flex;align-items:center}
+.layer .lb{border:1px solid var(--border);border-radius:10px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.layer .lb span{font-size:14px;padding:6px 10px;border-radius:6px;background:var(--soft);border:1px solid var(--border)}
+.l1{background:var(--blue-s);color:var(--blue)}.l2{background:var(--green-s);color:var(--green)}.l3{background:var(--purple-s);color:var(--purple)}.l4{background:var(--orange-s);color:var(--orange)}
+.domain{margin-top:32px}
+.domain-hd{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.domain-hd h3{font-size:21px;margin:0}
+.sol h3{font-size:17px}
+.sol .kv{font-size:14px;margin:6px 0}
+.sol .kv b{display:inline-block;min-width:44px;color:var(--sub);font-weight:600}
+.matrix{display:grid;grid-template-columns:40px 1fr 1fr;grid-template-rows:1fr 1fr 32px;gap:10px}
+.mq{border:1px solid var(--border);border-radius:12px;padding:16px}
+.mq h4{margin:0 0 8px}
+.mq .chips{display:flex;flex-wrap:wrap;gap:6px}
+.mq .chip{font-size:13px;border:1px solid var(--border);border-radius:999px;padding:4px 10px;background:var(--bg)}
+.axis-y{writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:14px;grid-row:1/3}
+.axis-x{grid-column:2/4;text-align:center;color:var(--sub);font-size:14px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.flow span{font-size:14px;padding:8px 12px;border-radius:8px;background:var(--soft);border:1px solid var(--border)}
+.flow i{font-style:normal;color:var(--sub)}
+@media (max-width:960px){.chain{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.chain{grid-template-columns:1fr}.layer{grid-template-columns:1fr}.matrix{grid-template-columns:1fr;grid-template-rows:auto}.axis-y,.axis-x{display:none}}
+section.sub{padding:40px 0 40px 24px;border-left:3px solid var(--blue-s);border-bottom:1px solid var(--border)}
+@media (max-width:640px){section.sub{padding-left:12px}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in"><div class="brand">AZAZIE × AI<small>电商 AI 全景落地方案</small></div><button class="printbtn" onclick="window.print()">打印 / 导出 PDF</button></div></header>
+<main>
+<div class="page active" id="overview">
+  <div class="hero">
+    <div class="eyebrow">Proposal · AI Across the Azazie Value Chain</div>
+    <h1>用 AI 重构 Azazie 的全链路：<br>从选款、内容、引流到转化与履约</h1>
+    <p class="lead">Azazie 采用定制生产模式：下单后才裁剪缝制。所以<b>需求数据可以直接驱动生产</b>，AI 的价值不只在前台卖货，还能贯穿选款、商品内容、流量、转化、客服、供应链整条链路。</p>
+    <div class="hero-meta"><span class="pill b">7 大领域</span><span class="pill">20 个可落地方案</span><span class="pill">3 个旗舰项目</span><span class="pill b">智能导购深度方案</span><span class="pill">12 个月路线图</span></div>
+  </div>
+  <nav class="toc" aria-label="目录">
+    <a href="#s1">01 业务与价值链</a><a href="#s2">02 AI 技术趋势</a><a href="#s3">03 整体架构</a><a href="#s4">04 七大领域方案</a><a href="#s5">05 优先级</a><a href="#s6">06 旗舰项目</a><a href="#s7">07 深度方案：智能导购</a><a href="#s8">08 指标与评估</a><a href="#s9">09 路线图</a><a href="#s10">10 协作与治理</a>
+  </nav>
+
+  <section id="s1">
+    <div class="sec-no">01</div>
+    <h2>业务理解：价值链上的 AI 机会</h2>
+    <p class="sec-desc">Azazie 是面向欧美的 DTC 婚礼及场合礼服品牌，主打定制生产、尺码 0–30 加免费定制尺寸、大量款式和颜色、免费面料小样与到家试穿。下面沿价值链标出每一环的 AI 机会。</p>
+    <div class="grid g4">
+      <div class="card soft"><div class="kpi">Made-to-Order</div><div class="kpi-l">下单后裁剪缝制；减少库存浪费，但对用户来说<b>“选错的代价高”</b></div></div>
+      <div class="card soft"><div class="kpi">500+ 款 · 70+ 色</div><div class="kpi-l">款式 × 颜色 × 面料组合极多，<b>选择过载</b>是核心问题</div></div>
+      <div class="card soft"><div class="kpi">0–30 码 + 定制</div><div class="kpi-l">尺码包容和免费定制尺寸，<b>尺码决策</b>直接影响满意度和售后</div></div>
+      <div class="card soft"><div class="kpi">小样 + 到家试穿</div><div class="kpi-l">免费面料小样、到家试穿（Home Try-On），<b>线下验证环节</b>可以被 AI 优化</div></div>
+    </div>
+    <div class="chain" style="margin-top:16px">
+      <div class="link"><div class="n">① 选款设计</div><div class="t">做什么款</div><div class="ai">趋势挖掘 · AI 设计概念图 · 先测后产</div></div>
+      <div class="link"><div class="n">② 商品内容</div><div class="t">怎么呈现</div><div class="ai">AI 修图 · 换色 · 多体型模特 · 文案多语言</div></div>
+      <div class="link"><div class="n">③ 流量获取</div><div class="t">怎么被找到</div><div class="ai">AI SEO · GEO · 广告素材生成 · Feed 优化</div></div>
+      <div class="link"><div class="n">④ 站内转化</div><div class="t">怎么选到</div><div class="ai">语义搜索 · 场景化推荐 · AI 导购 · 尺码顾问</div></div>
+      <div class="link"><div class="n">⑤ 营销优惠</div><div class="t">怎么促成</div><div class="ai">婚期生命周期营销 · Uplift 智能补贴</div></div>
+      <div class="link"><div class="n">⑥ 客服服务</div><div class="t">怎么解答</div><div class="ai">AI 客服 Agent · 坐席辅助 · 智能质检</div></div>
+      <div class="link"><div class="n">⑦ 生产履约</div><div class="t">怎么按时交付</div><div class="ai">面料需求预测 · 交期预测 · 视觉质检</div></div>
+      <div class="link"><div class="n">⑧ 内部效率</div><div class="t">怎么更高效</div><div class="ai">自然语言查数 · 上新 Copilot · 知识助手</div></div>
+    </div>
+    <div class="callout"><span class="ct">核心判断</span>Azazie 的 AI 杠杆来自三点：<b>款色组合多</b>（AIGC 能大幅降低内容成本）、<b>决策成本高</b>（搜索、导购、尺码能显著提升转化）、<b>定制生产</b>（需求数据可以直接反哺选款和供应链）。</div>
+  </section>
+
+  <section id="s2">
+    <div class="sec-no">02</div>
+    <h2>AI 技术趋势与电商适用性</h2>
+    <p class="sec-desc">不追热点，而是逐项判断每类能力在 Azazie 场景里的成熟度和适用边界。</p>
+    <div class="tbl"><table>
+      <thead><tr><th>技术方向</th><th>代表能力</th><th>Azazie 适用场景</th><th>成熟度</th><th>主要局限与对策</th></tr></thead>
+      <tbody>
+        <tr><td>多模态理解</td><td>看图识别属性、图文检索</td><td>属性补全、以图搜款、买家秀筛选、视觉质检</td><td><span class="pill g">可规模化</span></td><td>对细微色差不敏感 → 加入专门的色彩算法</td></tr>
+        <tr><td>图像生成与编辑</td><td>扩散模型、局部重绘、虚拟试穿</td><td>换色、多体型模特、场景图、广告素材、设计概念</td><td><span class="pill g">可规模化</span>（站内补图）<br><span class="pill o">探索中</span>（用户自助试穿）</td><td>面料和版型保真度 → 实拍图做约束，人工审核</td></tr>
+        <tr><td>视频生成</td><td>图生视频、数字人</td><td>商品短视频、社媒广告素材</td><td><span class="pill o">快速成熟中</span></td><td>动作中衣服的物理效果失真 → 先用于氛围类素材</td></tr>
+        <tr><td>Agent 与工具调用</td><td>多步规划、调用 API</td><td>AI 导购、客服 Agent、运营 Copilot</td><td><span class="pill g">可落地</span></td><td>多步任务出错会累积 → 限定工具范围，关键操作人工确认</td></tr>
+        <tr><td>推理模型</td><td>复杂分析、规划</td><td>经营分析、选款决策辅助、投放诊断</td><td><span class="pill o">适合离线</span></td><td>延迟高、成本高 → 不放在实时链路</td></tr>
+        <tr><td>小模型与蒸馏</td><td>低成本、低延迟</td><td>Query 改写、意图分类、标签</td><td><span class="pill g">可规模化</span></td><td>泛化能力弱 → 用大模型生成数据来训练</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="s3">
+    <div class="sec-no">03</div>
+    <h2>整体架构：一套底座，多场景复用</h2>
+    <p class="sec-desc">避免每个场景各做各的。商品知识和用户理解沉淀成共享底座，上层场景只做编排。</p>
+    <div class="layer"><div class="lh l1">应用层 · 前台</div><div class="lb"><span>语义搜索</span><span>个性化推荐</span><span>AI 导购</span><span>尺码顾问</span><span>AI 客服</span><span>生命周期营销</span></div></div>
+    <div class="layer"><div class="lh l2">应用层 · 中后台</div><div class="lb"><span>AI 内容工厂</span><span>AI SEO / GEO</span><span>投放素材</span><span>AI 选款</span><span>需求预测</span><span>问数 / Copilot</span></div></div>
+    <div class="layer"><div class="lh l3">能力层</div><div class="lb"><span>LLM 编排与 Agent</span><span>多模态理解</span><span>图像生成</span><span>推荐 / 排序模型</span><span>预测模型</span><span>评测与护栏</span></div></div>
+    <div class="layer"><div class="lh l4">数据底座</div><div class="lb"><span><b>商品知识库</b>（属性 / 颜色 / 面料 / 尺码）</span><span>用户画像与婚期</span><span>行为埋点</span><span>评价与客服对话</span><span>供应链数据</span></div></div>
+    <div class="callout g"><span class="ct">第一个基建：AI 补全的商品知识库</span>由多模态模型批量补全领型、袖型、廓形、面料、透感、是否有口袋等属性，搜索、推荐、导购、SEO、投放 Feed、文案六个场景都能直接复用，投入产出比最高。</div>
+  </section>
+
+  <section id="s4">
+    <div class="sec-no">04</div>
+    <h2>七大领域落地方案</h2>
+    <p class="sec-desc">每个方案写清楚：业务痛点、解决方案、关键设计和衡量指标。P0 = 3 个月内可上线并验证；P1 = 3–6 个月；P2 = 6 个月以上或探索性项目。</p>
+    <div class="domain"><div class="domain-hd"><span class="pill">A</span><h3>前台转化：搜索 · 推荐 · 导购</h3><span class="muted small">对应 JD：智能推荐、搜索优化</span></div><div class="grid g3"><div class="card sol"><div class="feat"><div class="hd"><h3>语义搜索与 Query 理解</h3><span class="pill b tag">P0</span></div></div>
+<div class="kv"><b>痛点</b>长尾场景词（beach wedding、modest、with pockets）召回差，零结果多</div><div class="kv"><b>方案</b>LLM 把 Query 改写成结构化筛选条件，再用关键词加向量做混合检索；拼写纠错、同义词扩展</div><div class="kv"><b>关键</b>LLM 离线生成同义词表，在线只做轻量模型推理，控制延迟</div><div class="kv"><b>指标</b>零结果率、搜索 CVR、搜索 GMV 占比</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>场景化个性化推荐</h3><span class="pill b tag">P0</span></div></div>
+<div class="kv"><b>痛点</b>推荐只看“相似款”，没考虑用户处在婚礼筹备的哪个阶段、什么身份</div><div class="kv"><b>方案</b>按身份（新娘/伴娘/母亲/宾客）和婚期阶段调整推荐策略；PDP 做“同色系伴娘团”和“鞋包配饰搭配”推荐</div><div class="kv"><b>关键</b>结合用户填写的信息（婚期、角色）和行为序列建模；在多样性和颜色一致性之间取平衡</div><div class="kv"><b>指标</b>推荐位 CTR、连带率、AOV</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>AI 智能导购（AI Stylist）</h3><span class="pill g tag">P1</span></div></div>
+<div class="kv"><b>痛点</b>选择过载、尺码和颜色没把握、伴娘团多人协同</div><div class="kv"><b>方案</b>对话式导购：澄清需求后推荐并说明理由；提供尺码顾问、交期校验、伴娘团分享投票</div><div class="kv"><b>关键</b>事实（价格、库存、交期）只从工具取值；对话与 GUI 卡片结合</div><div class="kv"><b>指标</b>会话转化率、AI 引导 GMV、尺码相关改单率</div><div class="kv"><a href="#s7">详见第 07 部分 →</a></div></div></div></div><div class="domain"><div class="domain-hd"><span class="pill">B</span><h3>商品表达：修图 · AIGC · 内容</h3><span class="muted small">对应 JD：商品表达与图像生成、AI 修图、AIGC</span></div><div class="grid g2"><div class="card sol"><div class="feat"><div class="hd"><h3>AI 修图流水线</h3><span class="pill b tag">P0</span></div></div>
+<div class="kv"><b>痛点</b>大量款式要统一做背景、调光、去瑕疵，修图人力成本高</div><div class="kv"><b>方案</b>抠图、换背景、去褶皱和瑕疵、统一光影的批量流水线；人工只做抽检</div><div class="kv"><b>关键</b>色彩还原是红线：用色卡做校准，生成后做色差检测</div><div class="kv"><b>指标</b>单图修图成本和周期、人工返修率</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>AIGC 换色 · 多体型 · 场景图</h3><span class="pill b tag">P0</span></div></div>
+<div class="kv"><b>痛点</b>500+ 款 × 70+ 色，不可能每个组合都实拍；大码和多肤色模特图不足</div><div class="kv"><b>方案</b>用实拍主色图生成其他颜色；生成不同体型、肤色的模特图；把产品放进婚礼场景（花园、海边、教堂）</div><div class="kv"><b>关键</b>面料质感和版型保真；标注 AI 示意图；输出前过品牌审核</div><div class="kv"><b>指标</b>色图覆盖率、PDP CVR、拍摄成本</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>商品文案与多语言本地化</h3><span class="pill g tag">P1</span></div></div>
+<div class="kv"><b>痛点</b>多国站点的标题、描述、尺码说明维护成本高，表达不统一</div><div class="kv"><b>方案</b>多模态模型看图补全结构化属性，再生成标题、描述和 alt 文本；按站点本地化（英式、美式拼写，币种，尺码习惯）</div><div class="kv"><b>关键</b>属性库是唯一信源，文案从属性生成，避免前后矛盾</div><div class="kv"><b>指标</b>属性覆盖率、上新周期、SEO 流量</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>评价与买家秀智能化</h3><span class="pill g tag">P1</span></div></div>
+<div class="kv"><b>痛点</b>评价多但难读，买家秀质量参差不齐</div><div class="kv"><b>方案</b>LLM 生成评价摘要（版型偏大偏小、颜色是否和图片一致）；用视觉模型筛选优质买家秀，并按体型标签展示</div><div class="kv"><b>关键</b>摘要必须能追溯到原始评价；负面信息也如实保留</div><div class="kv"><b>指标</b>PDP 停留时长、CVR、尺码相关售后率</div></div></div></div><div class="domain"><div class="domain-hd"><span class="pill">C</span><h3>流量获取：AI SEO · AI 投放</h3><span class="muted small">对应 JD：AI SEO、AI 投放</span></div><div class="grid g3"><div class="card sol"><div class="feat"><div class="hd"><h3>AI SEO：程序化场景落地页</h3><span class="pill b tag">P0</span></div></div>
+<div class="kv"><b>痛点</b>“颜色 × 场合 × 季节”的长尾搜索词量巨大，人工写不过来</div><div class="kv"><b>方案</b>基于属性库自动生成场景落地页（如 sage green bridesmaid dresses），配合 AI 生成的选购指南、FAQ 和结构化数据（Schema）</div><div class="kv"><b>关键</b>控制页面质量和重复度，避免被搜索引擎判为低质内容；人工审核模板</div><div class="kv"><b>指标</b>自然搜索流量、收录率、自然流量 GMV</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>GEO：生成式引擎优化</h3><span class="pill g tag">P1</span></div></div>
+<div class="kv"><b>痛点</b>用户越来越多地在 ChatGPT、Perplexity、Google AI 概览里问“伴娘裙去哪买”</div><div class="kv"><b>方案</b>把结构化商品数据、尺码政策、对比内容整理成 AI 容易引用的格式；监测品牌在 AI 回答里的提及率</div><div class="kv"><b>关键</b>这是新兴领域，先建立监测，再做优化</div><div class="kv"><b>指标</b>AI 回答中品牌提及率、AI 渠道引荐流量</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>AI 投放：素材与 Feed 优化</h3><span class="pill b tag">P0</span></div></div>
+<div class="kv"><b>痛点</b>Meta 和 Google 素材消耗快，Shopping Feed 标题质量不稳定</div><div class="kv"><b>方案</b>批量生成和变体测试广告素材（静图、短视频）；用 LLM 优化 Feed 的标题和属性；监测素材疲劳并自动轮换</div><div class="kv"><b>关键</b>与平台的智能投放（Advantage+、PMax）配合，重点优化“输入”：素材和数据</div><div class="kv"><b>指标</b>CTR、CPA、ROAS、素材生产周期</div></div></div></div><div class="domain"><div class="domain-hd"><span class="pill">D</span><h3>营销优惠：生命周期 · 智能补贴</h3><span class="muted small">对应 JD：营销优惠</span></div><div class="grid g2"><div class="card sol"><div class="feat"><div class="hd"><h3>婚期生命周期营销</h3><span class="pill b tag">P0</span></div></div>
+<div class="kv"><b>痛点</b>统一节奏群发邮件，与用户的筹备阶段不匹配</div><div class="kv"><b>方案</b>按婚期倒推营销旅程（灵感 → 小样 → 伴娘团 → 配饰 → 婚后），LLM 生成个性化邮件/短信内容，并优化发送时间</div><div class="kv"><b>关键</b>内容在模板约束内生成；控制频率，防止打扰</div><div class="kv"><b>指标</b>EDM 点击率、转化率、退订率</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>智能优惠与 Uplift 模型</h3><span class="pill g tag">P1</span></div></div>
+<div class="kv"><b>痛点</b>优惠券发给本来就会买的人，补贴被浪费</div><div class="kv"><b>方案</b>用 Uplift 模型识别“发券才会买”的用户；为伴娘团动态设置团购优惠；按用户和商品优化优惠力度</div><div class="kv"><b>关键</b>用随机发券实验收集训练数据；设置毛利护栏</div><div class="kv"><b>指标</b>增量 GMV / 补贴成本、毛利率</div></div></div></div><div class="domain"><div class="domain-hd"><span class="pill">E</span><h3>客服对话：AI Agent · 坐席辅助</h3><span class="muted small">对应 JD：客服对话</span></div><div class="grid g2"><div class="card sol"><div class="feat"><div class="hd"><h3>AI 客服 Agent</h3><span class="pill b tag">P0</span></div></div>
+<div class="kv"><b>痛点</b>订单状态、改尺寸、退换政策等重复咨询占比高，旺季排队长</div><div class="kv"><b>方案</b>接入订单系统和政策知识库的 Agent：自助查单、改地址、解释政策；复杂问题带上下文转人工</div><div class="kv"><b>关键</b>高风险操作（退款、改单）需要二次确认或人工审批</div><div class="kv"><b>指标</b>自助解决率、转人工率、CSAT、单次咨询成本</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>坐席辅助与质检</h3><span class="pill g tag">P1</span></div></div>
+<div class="kv"><b>痛点</b>人工客服回复不统一，新人上手慢</div><div class="kv"><b>方案</b>实时生成回复建议、会话摘要和标签；全量 AI 质检，并把高频问题反馈给产品和供应链</div><div class="kv"><b>关键</b>客服问题标签是重要的“用户之声”数据源</div><div class="kv"><b>指标</b>平均处理时长、质检覆盖率、问题闭环率</div></div></div></div><div class="domain"><div class="domain-hd"><span class="pill">F</span><h3>选款与供应链：AI 选款 · 需求预测 · 质检</h3><span class="muted small">对应 JD：AI 选款、AI 供应链</span></div><div class="grid g3"><div class="card sol"><div class="feat"><div class="hd"><h3>AI 选款与“先测后产”</h3><span class="pill g tag">P1</span></div></div>
+<div class="kv"><b>痛点</b>新款依赖设计师经验，命中率不稳定</div><div class="kv"><b>方案</b>从 Pinterest、TikTok、站内搜索和缺货词中挖掘趋势；AI 生成设计概念图；上线前用生成图做站内收藏/预售和广告测款，用数据决定是否打版</div><div class="kv"><b>关键</b>定制生产模式天然适合先测后产，测款成本低，风险可控</div><div class="kv"><b>指标</b>新款命中率、从设计到上线周期、测款准确率</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>面料与颜色需求预测</h3><span class="pill g tag">P1</span></div></div>
+<div class="kv"><b>痛点</b>定制生产不备成衣，但面料仍需备货；颜色流行周期快</div><div class="kv"><b>方案</b>按颜色、面料、季节预测需求，指导面料采购和产能排程</div><div class="kv"><b>关键</b>把婚礼季、Prom 季和营销日历作为特征</div><div class="kv"><b>指标</b>面料周转天数、缺料率、浪费率</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>交期预测与视觉质检</h3><span class="pill p tag">P2</span></div></div>
+<div class="kv"><b>痛点</b>承诺交期和实际交期有偏差；人工质检效率低</div><div class="kv"><b>方案</b>基于工厂产能和物流预测订单级交期，前台展示更准的到货时间；用视觉模型辅助检测做工瑕疵</div><div class="kv"><b>关键</b>交期预测直接接入导购和结算页的交期校验</div><div class="kv"><b>指标</b>交期准时率、延误投诉率、质检漏检率</div></div></div></div><div class="domain"><div class="domain-hd"><span class="pill">G</span><h3>AI 信息化：内部提效</h3><span class="muted small">对应 JD：AI 信息化</span></div><div class="grid g3"><div class="card sol"><div class="feat"><div class="hd"><h3>自然语言查数（Text-to-SQL）</h3><span class="pill g tag">P1</span></div></div>
+<div class="kv"><b>痛点</b>运营依赖数据分析师取数，排队时间长</div><div class="kv"><b>方案</b>基于指标口径层的问数助手，自动生成 SQL、图表和解读</div><div class="kv"><b>关键</b>口径统一是前提；结果要附 SQL，方便核对</div><div class="kv"><b>指标</b>取数时长、分析师需求量</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>运营与上新 Copilot</h3><span class="pill g tag">P1</span></div></div>
+<div class="kv"><b>痛点</b>上新流程涉及多个系统，填写工作重复</div><div class="kv"><b>方案</b>从设计稿和打版信息自动生成商品资料、属性、文案和图片任务，一键提交审核</div><div class="kv"><b>关键</b>流程自动化与人工审核节点结合</div><div class="kv"><b>指标</b>上新周期、单款上新人力</div></div><div class="card sol"><div class="feat"><div class="hd"><h3>内部知识助手</h3><span class="pill p tag">P2</span></div></div>
+<div class="kv"><b>痛点</b>政策、流程、SOP 分散在各处</div><div class="kv"><b>方案</b>基于内部文档的问答助手，覆盖客服、运营和新人培训</div><div class="kv"><b>关键</b>权限隔离，回答附来源</div><div class="kv"><b>指标</b>检索时长、新人上手时间</div></div></div></div>
+  </section>
+
+  <section id="s5">
+    <div class="sec-no">05</div>
+    <h2>优先级：价值 × 可行性</h2>
+    <p class="sec-desc">先做“数据现成、风险低、能快速量化”的项目，积累信任和基建，再投入战略型项目。</p>
+    <div class="matrix">
+      <div class="axis-y">业务价值 →</div>
+      <div class="mq" style="background:var(--purple-s)"><h4>战略投入（高价值 · 难度高）</h4><div class="chips"><span class="chip">AI 智能导购</span><span class="chip">AI 选款与先测后产</span><span class="chip">面料需求预测</span><span class="chip">Uplift 智能补贴</span></div></div>
+      <div class="mq" style="background:var(--green-s)"><h4>优先落地（高价值 · 易实现）</h4><div class="chips"><span class="chip">商品知识库补全</span><span class="chip">语义搜索</span><span class="chip">AIGC 换色 / 多体型</span><span class="chip">AI SEO 落地页</span><span class="chip">投放素材与 Feed</span><span class="chip">AI 客服 Agent</span></div></div>
+      <div class="mq" style="background:var(--soft)"><h4>探索观察（价值待验证 · 难度高）</h4><div class="chips"><span class="chip">用户自助虚拟试穿</span><span class="chip">视频生成广告</span><span class="chip">视觉质检</span></div></div>
+      <div class="mq" style="background:var(--blue-s)"><h4>效率提升（中等价值 · 易实现）</h4><div class="chips"><span class="chip">AI 修图</span><span class="chip">评价摘要</span><span class="chip">坐席辅助</span><span class="chip">问数助手</span><span class="chip">知识助手</span></div></div>
+      <div class="axis-x">实现难度 →（左难右易）</div>
+    </div>
+  </section>
+
+  <section id="s6">
+    <div class="sec-no">06</div>
+    <h2>三个旗舰项目</h2>
+    <div class="grid g3" style="margin-top:8px">
+      <div class="card"><span class="pill b">旗舰 ①</span><h3 style="margin-top:8px">AI 内容工厂</h3><p class="small muted">解决“款 × 色 × 体型”的内容覆盖问题，是商品表达、SEO、投放的共同上游。</p>
+        <div class="flow"><span>实拍主图</span><i>→</i><span>AI 修图</span><i>→</i><span>换色 / 多体型 / 场景</span><i>→</i><span>属性与文案多语言</span><i>→</i><span>色差检测 + 人工审核</span><i>→</i><span>上架 + AB</span></div>
+        <p class="small"><b>价值：</b>降低拍摄和修图成本，补齐长尾色图和大码图，提升 PDP 转化。</p><p class="small"><b>关键：</b>色准 SLA、AI 图标注规范、按品类逐步放量。</p></div>
+      <div class="card"><span class="pill p">旗舰 ②</span><h3 style="margin-top:8px">AI 选款 · 先测后产</h3><p class="small muted">利用定制生产的特点，把“猜爆款”变成“用数据验证爆款”。</p>
+        <div class="flow"><span>趋势与需求挖掘</span><i>→</i><span>AI 设计概念图</span><i>→</i><span>站内收藏 / 预售 + 广告测款</span><i>→</i><span>数据评分</span><i>→</i><span>打版生产</span></div>
+        <p class="small"><b>价值：</b>提升新款命中率，缩短上新周期，减少面料浪费。</p><p class="small"><b>关键：</b>测款信号与真实销量的相关性校准；与设计团队共创，而不是替代设计师。</p></div>
+      <div class="card"><span class="pill g">旗舰 ③</span><h3 style="margin-top:8px">AI 智能导购</h3><p class="small muted">针对高决策成本和多人协同，把“逛”变成“被懂”。</p>
+        <div class="flow"><span>需求澄清</span><i>→</i><span>混合检索 + 重排</span><i>→</i><span>交期 / 尺码校验</span><i>→</i><span>推荐理由 + 卡片</span><i>→</i><span>小样 / 伴娘团 / 加购</span></div>
+        <p class="small"><b>价值：</b>提升转化率和团单完成率，降低尺码相关改单和客服成本。</p><p class="small"><b>关键：</b>事实只从工具取值；少问多给；用 holdout 实验衡量真实增量。</p><p class="small"><a href="#s7">→ 完整方案见第 07 部分</a></p></div>
+    </div>
+  </section>
+
+  <section id="s7">
+    <div class="sec-no">07</div>
+    <h2>深度方案：AI 智能导购</h2>
+    <p class="sec-desc">在全景方案中，智能导购是最直接影响转化的旗舰项目。下面从业务难点、用户旅程、功能矩阵、系统设计、原型、模型选型、指标实验、路线图到风险，完整展开。</p>
+    <div class="flow"><span>07.1 难点</span><span>07.2 用户旅程</span><span>07.3 功能矩阵</span><span>07.4 系统设计</span><span>07.5 原型</span><span>07.6 模型选型</span><span>07.7 指标与 AB</span><span>07.8 路线图</span><span>07.9 风险</span></div>
+  </section>
+  <section id="gd-g1" class="sub"><div class="sec-no">07.1</div>
+    <h2>智能导购为什么是 Azazie 的重点</h2>
+    <p class="sec-desc">导购难点和一般电商不同，主要有三点。</p>
+    <div class="grid g3">
+      <div class="card"><h3>① 场景驱动，不是品类驱动</h3><p class="muted small">用户搜的往往是“秋季谷仓婚礼的鼠尾草绿伴娘裙”，而不是“雪纺长裙”。需要理解<b>婚期、季节、场地、主题色、风格</b>。</p></div>
+      <div class="card"><h3>② 多人协同决策</h3><p class="muted small">伴娘服由新娘定调、多位伴娘分别下单，体型、预算、偏好不同。“统一颜色 + 各自选款（Mix & Match）”是典型需求。</p></div>
+      <div class="card"><h3>③ 有硬性时间约束</h3><p class="muted small">婚期倒推生产和物流周期。推荐结果必须<b>“能按时到”</b>，否则推荐得再准也没用。</p></div>
+    </div>
+    <div class="callout"><span class="ct">一句话判断</span>智能导购在 Azazie 的价值 = 降低选择过载 × 降低尺码/颜色的不确定性 × 打通伴娘团协同，最终提升 <b>转化率、团单完成率和客单价</b>，并降低<b>改单、退换和客服成本</b>。</div>
+  </section>
+  <section id="gd-iv2" class="sub">
+    <div class="sec-no">07.2</div>
+    <h2>智能导购用户旅程与 AI 机会点</h2>
+    <p class="sec-desc">以「新娘为伴娘团选裙」这一高价值场景为主线，拆解每个环节的痛点和 AI 介入点。</p>
+    <div class="journey">
+      <div class="step"><div class="n">STEP 1</div><div class="t">找灵感</div><div class="pain">有 Pinterest 图和配色板，但不知道站内对应哪款哪色</div><div class="ai">🔍 以图搜款 / 配色板 → 站内色卡匹配</div></div>
+      <div class="step"><div class="n">STEP 2</div><div class="t">缩小范围</div><div class="pain">款式太多，筛选项不懂（领型、面料、廓形）</div><div class="ai">💬 对话式需求澄清 + 自然语言搜索</div></div>
+      <div class="step"><div class="n">STEP 3</div><div class="t">比较决策</div><div class="pain">担心上身效果、颜色色差、面料质感</div><div class="ai">🧍 多体型 AI 上身图 + 小样智能推荐</div></div>
+      <div class="step"><div class="n">STEP 4</div><div class="t">团队协同</div><div class="pain">伴娘体型不同、意见难统一、进度难追</div><div class="ai">👯 伴娘团 AI 搭配 + 投票 + 进度提醒</div></div>
+      <div class="step"><div class="n">STEP 5</div><div class="t">尺码下单</div><div class="pain">在标准码和定制尺寸之间犹豫；担心赶不上婚期</div><div class="ai">📏 Fit Advisor + 婚期交期校验</div></div>
+      <div class="step"><div class="n">STEP 6</div><div class="t">售后复购</div><div class="pain">修改、物流、配件、其他场合再购</div><div class="ai">🤖 导购客服一体化 + 生命周期推荐</div></div>
+    </div>
+  </section>
+  <section id="gd-iv3" class="sub">
+    <div class="sec-no">07.3</div>
+    <h2>智能导购功能矩阵</h2>
+    <p class="sec-desc">按「业务价值 × 落地难度」排优先级。P0 走现有数据和成熟技术，先拿到可量化的结果；P1/P2 投入更大、想象空间更大。</p>
+    <div class="grid g3">
+      <div class="card feat"><div class="hd"><h3>AI Stylist 对话导购</h3><span class="pill b tag">P0</span></div><p class="small muted">站内常驻入口 + 商品详情页唤起。多轮澄清婚期、场合、颜色、预算、体型偏好，给出带推荐理由的商品卡片。</p><div class="row"><b>技术</b>LLM + 工具调用 + 商品 RAG</div><div class="row"><b>指标</b>会话转化率、AI 引导 GMV</div></div>
+      <div class="card feat"><div class="hd"><h3>语义搜索 / Query 理解</h3><span class="pill b tag">P0</span></div><p class="small muted">“with pockets”“modest”“plus size friendly”“beach wedding” 等长尾 query 改写成结构化筛选；减少零结果。</p><div class="row"><b>技术</b>LLM Query 改写 + 向量混合检索</div><div class="row"><b>指标</b>零结果率、搜索 CVR</div></div>
+      <div class="card feat"><div class="hd"><h3>Fit Advisor 尺码顾问</h3><span class="pill b tag">P0</span></div><p class="small muted">结合身体数据、款式版型、评价里的“偏大/偏小”和售后原因，推荐标准码或定制尺寸，并给出置信度。</p><div class="row"><b>技术</b>评价 NLP 抽取 + 尺码模型</div><div class="row"><b>指标</b>尺码相关改单/售后率</div></div>
+      <div class="card feat"><div class="hd"><h3>以图搜款 · 配色匹配</h3><span class="pill g tag">P1</span></div><p class="small muted">上传灵感图或婚礼配色板，匹配站内相似款式和最接近的色卡，并推荐“同色系渐变”的伴娘团方案。</p><div class="row"><b>技术</b>多模态向量（CLIP/SigLIP 类）+ 色彩空间距离</div><div class="row"><b>指标</b>使用率、图搜后加购率</div></div>
+      <div class="card feat"><div class="hd"><h3>伴娘团协同助手</h3><span class="pill g tag">P1</span></div><p class="small muted">新娘锁定颜色/面料，AI 为每位伴娘按体型和偏好推荐不同款；生成分享页投票，追踪谁还没下单并自动提醒。</p><div class="row"><b>技术</b>约束推荐 + LLM 生成消息</div><div class="row"><b>指标</b>团单完成率、团均件数</div></div>
+      <div class="card feat"><div class="hd"><h3>小样 / 到家试穿智能推荐</h3><span class="pill g tag">P1</span></div><p class="small muted">根据对话和浏览记录推荐“最值得寄的 10 个色卡 / 3 件试穿”，减少盲选，提升小样→下单转化。</p><div class="row"><b>技术</b>推荐排序 + 意图信号</div><div class="row"><b>指标</b>小样→订单转化、到订单时长</div></div>
+      <div class="card feat"><div class="hd"><h3>AIGC 多体型上身图</h3><span class="pill p tag">P2</span></div><p class="small muted">同一款在不同体型、肤色模特上的上身效果；70+ 颜色自动换色渲染，降低拍摄成本，补齐长尾色图。</p><div class="row"><b>技术</b>扩散模型换色 / 虚拟试穿（VTON）</div><div class="row"><b>指标</b>PDP 停留、CVR、拍摄成本</div></div>
+      <div class="card feat"><div class="hd"><h3>婚期感知推荐</h3><span class="pill b tag">P0</span></div><p class="small muted">用户留婚期后，排序时纳入生产 + 物流时效，优先展示能按时到的款，必要时引导加急或现货（Ships Now）。</p><div class="row"><b>技术</b>业务规则重排</div><div class="row"><b>指标</b>延误投诉率、加急附加收入</div></div>
+      <div class="card feat"><div class="hd"><h3>导购客服一体化</h3><span class="pill g tag">P1</span></div><p class="small muted">同一个助手处理售前咨询（面料、长度、改尺寸政策）和售后（订单状态），复杂问题无缝转人工并带上下文。</p><div class="row"><b>技术</b>政策 RAG + 订单 API + 转人工</div><div class="row"><b>指标</b>自助解决率、转人工率、CSAT</div></div>
+    </div>
+    <div class="callout g"><span class="ct">和 JD 其他方向的联动</span>AIGC 上身图对应「商品表达与图像生成」；婚期生命周期 EDM/SMS 对应「营销优惠」；对话中的用户需求数据可以反哺「AI 选款」（例如高频需求但站内缺货的颜色/款式）；语义化的商品属性可以复用到「AI SEO」。</div>
+  </section>
+  <section id="gd-iv4" class="sub">
+    <div class="sec-no">07.4</div>
+    <h2>核心方案：AI Stylist 的系统设计</h2>
+    <p class="sec-desc">原则：<b>LLM 负责理解和表达，结构化系统负责事实</b>。价格、库存、交期、政策一律通过工具查询，不让模型自由生成。</p>
+    <div class="arch" role="img" aria-label="系统架构：用户输入到理解层到检索排序层到生成层到前端">
+      <div class="col"><h4>① 输入</h4><div>文字 / 语音</div><div>灵感图片</div><div>当前页面上下文</div><div>用户画像与婚期</div></div>
+      <div class="arrow">→</div>
+      <div class="col"><h4>② 理解与编排（LLM Agent）</h4><div>意图识别：找款 / 比较 / 尺码 / 政策 / 订单</div><div>槽位抽取：场合、季节、颜色、廓形、预算、尺码</div><div>追问策略：最多 1–2 轮，避免变成问卷</div><div>工具路由：搜索、尺码、交期、订单、政策库</div></div>
+      <div class="arrow">→</div>
+      <div class="col"><h4>③ 检索与排序</h4><div>混合检索：属性过滤 + 文本/图像向量</div><div>个性化重排：CTR/CVR 模型</div><div>业务约束：交期、库存、毛利、品牌规则</div><div>多样性：避免同款不同色刷屏</div></div>
+      <div class="arrow">→</div>
+      <div class="col"><h4>④ 生成与呈现</h4><div>商品卡片 + 一句推荐理由</div><div>快捷追问 chip</div><div>对比表 / 小样一键加购</div><div>分享给伴娘团</div></div>
+    </div>
+    <div class="arch-bottom">
+      <div class="card soft"><h3 style="font-size:16px">知识底座</h3><p class="small muted">商品结构化属性（AI 补全的领型、袖型、面料、透感、是否有口袋）、评价摘要、尺码表、政策文档、婚礼风格知识库。</p></div>
+      <div class="card soft"><h3 style="font-size:16px">安全护栏</h3><p class="small muted">事实只从工具取值；推荐商品必须存在且可售；敏感话题与竞品话题拒答模板；身材相关措辞做 body-positive 审核。</p></div>
+      <div class="card soft"><h3 style="font-size:16px">评测闭环</h3><p class="small muted">离线：人工标注 + LLM-as-Judge 打分（相关性、事实性、语气）；线上：AB 实验 + 会话抽检 + 差评归因。</p></div>
+    </div>
+  </section>
+  <section id="gd-iv5" class="sub">
+    <div class="sec-no">07.5</div>
+    <h2>原型示意：一次典型对话</h2>
+    <p class="sec-desc">低保真示意，重点展示交互原则，不代表最终视觉。</p>
+    <div class="mockwrap">
+      <div class="phone" role="img" aria-label="手机端 AI Stylist 对话原型">
+        <div class="screen">
+          <div class="scr-top">✨ Azazie Stylist <span>Beta</span></div>
+          <div class="chat">
+            <div class="msg u">I need bridesmaid dresses for an October barn wedding. Sage &amp; dusty rose, 6 girls, under $150.</div>
+            <div class="msg a">Love that palette! 🌿 When is the wedding date? I'll only show styles that arrive in time.</div>
+            <div class="chips"><span class="chip">Oct 18</span><span class="chip">Not sure yet</span></div>
+            <div class="msg u">Oct 18. Some girls want sleeves.</div>
+            <div class="msg a">Here's a mix-and-match set in Sage — all deliver by Oct 4 ✅</div>
+            <div class="prods">
+              <div class="prod"><div class="img" style="background:#9CAF94"><i></i></div><div class="meta"><b>Style A</b><br>Halter · Chiffon</div></div>
+              <div class="prod"><div class="img" style="background:#A8B89F"><i></i></div><div class="meta"><b>Style B</b><br>Flutter sleeve</div></div>
+              <div class="prod"><div class="img" style="background:#C99A9A"><i></i></div><div class="meta"><b>Style C</b><br>Dusty Rose · V</div></div>
+            </div>
+            <div class="why">Why: matches your palette · rustic-friendly chiffon · 2 options with sleeves</div>
+            <div class="chips"><span class="chip">📦 Order 3 swatches</span><span class="chip">👯 Share with bridesmaids</span><span class="chip">📏 Size help</span></div>
+          </div>
+          <div class="inputbar"><span>Ask anything or upload a photo…</span><span>📷</span></div>
+        </div>
+      </div>
+      <div>
+        <h3>交互设计原则</h3>
+        <div class="grid g2" style="margin-top:12px">
+          <div class="card"><b>少问多给</b><p class="small muted">首轮就要给结果，只追问会改变结果的关键槽位（如婚期）。</p></div>
+          <div class="card"><b>推荐要说理由</b><p class="small muted">每张卡片一句话解释“为什么适合你”，比单纯列商品更可信。</p></div>
+          <div class="card"><b>对话和 GUI 结合</b><p class="small muted">商品卡、chip、对比表、加购按钮，避免让用户读大段文字。</p></div>
+          <div class="card"><b>导向下一步行动</b><p class="small muted">每轮都给出明确下一步：寄小样、分享伴娘团、尺码帮助、加购。</p></div>
+          <div class="card"><b>多入口唤起</b><p class="small muted">首页、搜索零结果、PDP“这款适合我吗？”、购物车犹豫时。</p></div>
+          <div class="card"><b>品牌语气</b><p class="small muted">温暖、包容、像闺蜜和专业造型师；身材相关表达遵循 body-positive。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="gd-iv6" class="sub">
+    <div class="sec-no">07.6</div>
+    <h2>智能导购模型选型</h2>
+    <p class="sec-desc">不押注单一模型，而是按任务分层路由，在效果、延迟和成本之间平衡。下表是评估框架，具体模型以上线前的评测结果为准。</p>
+    <div class="tbl"><table>
+      <thead><tr><th>任务</th><th>候选方案</th><th>关键评估维度</th><th>取舍思路</th></tr></thead>
+      <tbody>
+        <tr><td>对话编排 / 工具调用</td><td>头部闭源大模型（GPT / Claude / Gemini 系列）</td><td>函数调用准确率、多轮一致性、英文语气、P95 延迟</td><td>用效果最好的模型做复杂推理，简单意图交给小模型</td></tr>
+        <tr><td>Query 改写 / 意图分类</td><td>小参数模型或微调开源模型（如 Qwen、Llama 系列）</td><td>准确率、单次成本、&lt;300ms 延迟</td><td>高频低复杂度，适合蒸馏后自部署</td></tr>
+        <tr><td>商品 / 图像向量</td><td>多模态 Embedding（CLIP / SigLIP 类，可在自有商品图上微调）</td><td>Recall@K、颜色敏感度</td><td>颜色是 Azazie 的核心属性，需要单独评测色彩相似度</td></tr>
+        <tr><td>商品属性补全</td><td>多模态大模型批量离线打标</td><td>属性准确率、覆盖率</td><td>离线跑，成本可控，抽检质量后入库</td></tr>
+        <tr><td>换色 / 上身图</td><td>扩散模型 + ControlNet / 虚拟试穿模型</td><td>面料和版型保真度、色准、人工审核通过率</td><td>先用于站内补图，再开放给用户自助上身</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout o"><span class="ct">局限性要讲清楚</span>大模型会幻觉、延迟高、成本随流量线性增长，对颜色这种细粒度视觉属性也不够可靠。所以事实类信息要走工具，颜色匹配要走专门的色彩算法，生成图要人工审核或打标。</div>
+  </section>
+  <section id="gd-iv7" class="sub">
+    <div class="sec-no">07.7</div>
+    <h2>智能导购指标体系与 AB 实验</h2>
+    <div class="tree">
+      <div class="north"><div class="small muted">北极星指标</div><div class="k">AI 导购引导 GMV</div><div class="small">使用 AI 导购的用户在 7 天内产生的 GMV（归因窗口与业务对齐），同时看<b>整体站点 CVR 增量</b>，避免只是把原本会买的人转移到 AI 入口。</div></div>
+      <div class="grid g3">
+        <div class="card"><h3 style="font-size:16px">使用层</h3><ul class="small"><li>入口曝光 → 会话发起率</li><li>有效会话率（≥2 轮或有点击）</li><li>7 日回访使用率</li></ul></div>
+        <div class="card"><h3 style="font-size:16px">效果层</h3><ul class="small"><li>推荐 CTR / 加购率 / CVR</li><li>小样→订单转化</li><li>团单完成率、AOV</li><li>下单所需时长</li></ul></div>
+        <div class="card"><h3 style="font-size:16px">护栏层</h3><ul class="small"><li>事实错误率（价格/交期/政策）</li><li>尺码相关改单/售后率</li><li>P95 响应延迟、单会话成本</li><li>点踩率、转人工率</li></ul></div>
+      </div>
+    </div>
+    <h4 style="margin-top:32px">AB 实验设计要点</h4>
+    <div class="grid g4">
+      <div class="card soft"><b>分流单位</b><p class="small muted">按用户（cookie + 登录 ID），伴娘团场景按“团”分流，避免同团体验不一致。</p></div>
+      <div class="card soft"><b>季节性</b><p class="small muted">婚礼和 Prom 有明显旺季，实验需要覆盖完整周期，旺季前完成验证。</p></div>
+      <div class="card soft"><b>长决策链</b><p class="small muted">从首访到下单可能跨周甚至跨月，除了即时 CVR，还要看小样申请、收藏等先行指标。</p></div>
+      <div class="card soft"><b>新奇效应</b><p class="small muted">观察 2–4 周的趋势，剔除早期尝鲜流量带来的虚高。</p></div>
+    </div>
+  </section>
+  <section id="gd-iv8" class="sub">
+    <div class="sec-no">07.8</div>
+    <h2>智能导购落地路线图</h2>
+    <div class="road">
+      <div class="phase"><div class="when">0–3 个月 · MVP 验证</div><h3>先把“找得到”做好</h3><ul><li>语义搜索 + Query 改写（降低零结果）</li><li>LLM 批量补全商品属性</li><li>AI Stylist v1：找款 + FAQ，覆盖伴娘服品类</li><li>婚期交期校验</li><li>埋点、评测集、AB 平台对接</li></ul></div>
+      <div class="phase p2"><div class="when">3–6 个月 · 深化场景</div><h3>做“选得准、团能成”</h3><ul><li>Fit Advisor 尺码顾问</li><li>以图搜款 + 配色板匹配</li><li>伴娘团协同助手 + 分享投票</li><li>小样 / 到家试穿智能推荐</li><li>扩展至婚纱、母亲装，多语言站点</li></ul></div>
+      <div class="phase p3"><div class="when">6–12 个月 · 全链路</div><h3>做“看得见、留得住”</h3><ul><li>AIGC 多体型上身图 / 换色</li><li>导购 + 客服一体化</li><li>婚礼生命周期个性化营销</li><li>需求洞察反哺选款与供应链</li></ul></div>
+    </div>
+  </section>
+  <section id="gd-iv9" class="sub">
+    <div class="sec-no">07.9</div>
+    <h2>智能导购风险与对策</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>风险</th><th>表现</th><th>对策</th></tr></thead>
+      <tbody>
+        <tr><td>事实幻觉</td><td>说错价格、交期、退换政策</td><td>事实只从工具/RAG 取值；回复里引用数据源；高风险问题使用固定话术模板</td></tr>
+        <tr><td>颜色色差</td><td>AI 图或推荐色和实物不一致，导致售后</td><td>色彩算法独立校准；生成图标注“效果示意”；引导寄小样</td></tr>
+        <tr><td>身材敏感</td><td>措辞冒犯用户，伤害品牌</td><td>body-positive 话术规范 + 输出审核 + 红队测试</td></tr>
+        <tr><td>成本失控</td><td>流量上来后推理成本过高</td><td>模型分层路由、缓存高频问答、小模型蒸馏、按 ROI 控制入口曝光</td></tr>
+        <tr><td>价值归因不清</td><td>AI 入口“抢功”自然转化</td><td>以 holdout 实验衡量整体增量，而不只看入口转化</td></tr>
+        <tr><td>隐私合规</td><td>身体尺寸、照片等敏感数据</td><td>最小化收集、明确授权、遵守 GDPR / CCPA、照片不用于训练（除非用户同意）</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="s8">
+    <div class="sec-no">08</div>
+    <h2>指标体系与价值评估</h2>
+    <div class="grid g4">
+      <div class="card"><h3 style="font-size:16px">增长</h3><ul class="small"><li>流量：自然流量、ROAS</li><li>转化：CVR、搜索 / 推荐 GMV</li><li>客单：AOV、连带率、团单件数</li></ul></div>
+      <div class="card"><h3 style="font-size:16px">效率</h3><ul class="small"><li>单图 / 单款内容成本</li><li>上新周期</li><li>客服单次成本、自助解决率</li><li>取数时长</li></ul></div>
+      <div class="card"><h3 style="font-size:16px">体验</h3><ul class="small"><li>尺码相关改单 / 售后率</li><li>CSAT / NPS</li><li>交期准时率</li></ul></div>
+      <div class="card"><h3 style="font-size:16px">供应链</h3><ul class="small"><li>新款命中率</li><li>面料周转天数、浪费率</li><li>缺料率</li></ul></div>
+    </div>
+    <h4 style="margin-top:28px">不同场景用不同的评估方法</h4>
+    <div class="tbl"><table>
+      <thead><tr><th>场景</th><th>评估方法</th><th>注意点</th></tr></thead>
+      <tbody>
+        <tr><td>搜索 / 推荐 / 导购</td><td>用户级 AB 实验 + 长期 holdout</td><td>决策链长，要观察先行指标；婚礼和 Prom 有季节性</td></tr>
+        <tr><td>AIGC 内容</td><td>商品级 AB（同款 AI 图 vs 实拍图）</td><td>同时监控 CVR 和颜色相关退货</td></tr>
+        <tr><td>AI SEO</td><td>页面组对照（实验组页面 vs 对照组页面）</td><td>搜索引擎收录有滞后，观察周期至少 4–8 周</td></tr>
+        <tr><td>AI 投放</td><td>平台 A/B、地域增量实验（Geo-lift）</td><td>平台归因偏乐观，需要用增量实验校准</td></tr>
+        <tr><td>LLM 应用</td><td>离线评测集 + LLM-as-Judge + 人工抽检</td><td>上线前设定事实性、安全性的准入门槛</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><span class="ct">AI 项目 ROI</span>ROI =（增量毛利 + 节省的人力 / 外包成本）÷（模型推理成本 + 研发与运营投入）。每个项目立项时先定义好 ROI 口径，上线后按月复盘。</div>
+  </section>
+
+  <section id="s9">
+    <div class="sec-no">09</div>
+    <h2>12 个月路线图</h2>
+    <div class="road">
+      <div class="phase"><div class="when">0–3 个月 · 打基础，拿结果</div><h3>底座 + 快速见效</h3><ul><li>商品知识库 AI 补全</li><li>语义搜索 / Query 改写</li><li>AIGC 换色 + AI 修图流水线</li><li>AI SEO 场景落地页、Feed 优化</li><li>AI 客服 Agent v1（查单 + 政策）</li><li>评测集、埋点、AB 规范</li></ul></div>
+      <div class="phase p2"><div class="when">3–6 个月 · 深化场景</div><h3>转化 + 营销</h3><ul><li>AI 导购 v1（伴娘服品类）+ 尺码顾问</li><li>场景化推荐、伴娘团协同</li><li>婚期生命周期营销</li><li>多体型模特图、评价摘要</li><li>坐席辅助、问数助手</li></ul></div>
+      <div class="phase p3"><div class="when">6–12 个月 · 打通全链路</div><h3>选款 + 供应链</h3><ul><li>AI 选款与先测后产</li><li>面料需求预测、交期预测</li><li>Uplift 智能补贴</li><li>GEO 监测与优化</li><li>探索用户自助虚拟试穿、视频素材</li></ul></div>
+    </div>
+  </section>
+
+  <section id="s10">
+    <div class="sec-no">10</div>
+    <h2>协作方式与 AI 治理</h2>
+    <div class="grid g2">
+      <div class="card"><h3>跨团队协作</h3><ul class="small">
+        <li><b>产品：</b>定义问题、目标指标、评测标准和 bad case；把控用户体验和 ROI</li>
+        <li><b>算法：</b>模型选型、训练、离线评测；与产品共同维护评测集</li>
+        <li><b>工程：</b>工具接口、延迟与成本优化、灰度发布</li>
+        <li><b>设计 / 内容：</b>交互规范、品牌语气、AIGC 审核标准</li>
+        <li><b>业务方（运营、客服、供应链）：</b>提供场景、数据和反馈，参与验收</li>
+      </ul></div>
+      <div class="card"><h3>AI 治理与风险</h3><ul class="small">
+        <li><b>事实准确：</b>价格、交期、政策只从系统取值</li>
+        <li><b>品牌与包容性：</b>身材相关表达遵循 body-positive 规范；生成内容统一审核</li>
+        <li><b>AIGC 合规：</b>AI 图标注说明；模特肖像和训练素材的版权清晰</li>
+        <li><b>隐私：</b>身体数据和照片最小化收集，遵守 GDPR / CCPA</li>
+        <li><b>成本：</b>模型分层路由、缓存、蒸馏；按 ROI 控制调用量</li>
+        <li><b>模型更替：</b>建立模型抽象层和评测集，新模型出来可以快速评估和切换</li>
+      </ul></div>
+    </div>
+  </section>
+  <div class="foot">注：公司信息来自 Azazie 官网及公开报道；方案中的优先级和指标需要结合内部数据进一步校准。</div>
+</div>
+</main>
+</body>
+</html>
